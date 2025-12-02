@@ -39,6 +39,21 @@ L'application offre plusieurs onglets d'analyse :
 
 ## 🚀 Installation et lancement
 
+### 🛠️ Méthode recommandée : Makefile
+```bash
+# Configuration complète automatique
+make all
+
+# Lancer l'application Streamlit
+make run
+
+# Explorer les données
+make explore
+
+# Voir toutes les commandes disponibles
+make help
+```
+
 ### Méthode 1 : Script automatique
 ```bash
 ./run_app.sh
@@ -61,6 +76,16 @@ pip install -r requirements.txt
 # Lancer l'application
 streamlit run streamlit_app.py
 ```
+
+## 📋 Commandes Makefile
+
+- `make all` - Configuration complète (environnement + données)
+- `make setup` - Créer l'environnement virtuel et installer les dépendances
+- `make data` - Extraire le fichier de données du zip
+- `make run` - Lancer l'application Streamlit
+- `make explore` - Exécuter le script d'exploration des données
+- `make clean` - Nettoyer (supprimer venv et données extraites)
+- `make help` - Afficher toutes les commandes disponibles
 
 ## 📁 Structure du projet
 
