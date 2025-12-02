@@ -8,6 +8,10 @@ from datetime import datetime
 import warnings
 warnings.filterwarnings('ignore')
 
+# Setup data on first run
+from setup_data import setup_data
+setup_data()
+
 # Configuration de la page
 st.set_page_config(
     page_title="Analyse du Terrorisme Mondial",
