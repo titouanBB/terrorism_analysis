@@ -14,8 +14,8 @@ setup_data()
 
 # Configuration de la page
 st.set_page_config(
-    page_title="Analyse du Terrorisme Mondial",
-    page_icon="🌍",
+    page_title="Analyse du Terrorisme en Europe",
+    page_icon="🇪🇺",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -23,19 +23,41 @@ st.set_page_config(
 # Cache pour charger les données
 @st.cache_data
 def load_data():
-    """Charge les données depuis le fichier Excel"""
+    """Charge et filtre les données pour l'Europe"""
     try:
         df = pd.read_excel('globalterrorismdb_0522dist.xlsx')
-        # Nettoyage basique des données
-        df = df.dropna(subset=['iyear', 'country_txt'])
+        
+        # Pays européens
+        european_countries = [
+            'France', 'Germany', 'United Kingdom', 'Italy', 'Spain', 'Netherlands', 
+            'Belgium', 'Greece', 'Portugal', 'Austria', 'Switzerland', 'Denmark',
+            'Sweden', 'Norway', 'Finland', 'Ireland', 'Luxembourg', 'Poland',
+            'Czech Republic', 'Hungary', 'Slovakia', 'Slovenia', 'Croatia',
+            'Romania', 'Bulgaria', 'Estonia', 'Latvia', 'Lithuania', 'Malta', 'Cyprus'
+        ]
+        
+        # Filtrer pour l'Europe uniquement
+        df = df[df['country_txt'].isin(european_countries)].copy()
+        
+        # Nettoyage des données
+        df['date'] = pd.to_datetime(df[['iyear', 'imonth', 'iday']], errors='coerce')
+        df['nkill'] = df['nkill'].fillna(0)
+        df['nwound'] = df['nwound'].fillna(0)
+        df['city'] = df['city'].fillna('Unknown')
+        df['attacktype1_txt'] = df['attacktype1_txt'].fillna('Unknown')
+        df['targtype1_txt'] = df['targtype1_txt'].fillna('Unknown')
+        df['gname'] = df['gname'].fillna('Unknown')
+        
         return df
+        
     except Exception as e:
         st.error(f"Erreur lors du chargement des données: {e}")
         return None
 
 def main():
-    st.title("🌍 Analyse du Terrorisme Mondial")
-    st.markdown("### Exploration interactive de la Global Terrorism Database")
+    st.title("🇪🇺 Analyse du Terrorisme en Europe")
+    st.markdown("### Exploration interactive des données européennes (1970-2020)")
+    st.markdown("📍 *Consultez la page France pour une analyse détaillée avec carte interactive*")
     
     # Chargement des données
     df = load_data()
