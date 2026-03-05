@@ -17,19 +17,41 @@ st.set_page_config(
 
 @st.cache_data
 def load_data():
-    """Charge les données depuis le fichier Excel"""
+    """Charge les données depuis le fichier Excel ou ZIP"""
     try:
-        df = pd.read_excel('../globalterrorismdb_0522dist.xlsx')
+        # Essayer d'abord avec le chemin depuis le répertoire racine (quand lancé depuis streamlit)
+        df = pd.read_excel('globalterrorismdb_0522dist.xlsx')
         df = df.dropna(subset=['iyear', 'country_txt'])
         return df
     except:
         try:
-            df = pd.read_excel('globalterrorismdb_0522dist.xlsx')
+            # Essayer avec le chemin depuis le répertoire pages
+            df = pd.read_excel('../globalterrorismdb_0522dist.xlsx')
             df = df.dropna(subset=['iyear', 'country_txt'])
             return df
-        except Exception as e:
-            st.error(f"Erreur lors du chargement des données: {e}")
-            return None
+        except:
+            try:
+                # Essayer de charger depuis le .zip (pour GitHub/déploiement)
+                import zipfile
+                with zipfile.ZipFile('globalterrorismdb_0522dist.zip', 'r') as zip_ref:
+                    with zip_ref.open('globalterrorismdb_0522dist.xlsx') as excel_file:
+                        df = pd.read_excel(excel_file)
+                        df = df.dropna(subset=['iyear', 'country_txt'])
+                        return df
+            except:
+                try:
+                    # Essayer avec le chemin parent pour le zip
+                    import zipfile
+                    with zipfile.ZipFile('../globalterrorismdb_0522dist.zip', 'r') as zip_ref:
+                        with zip_ref.open('globalterrorismdb_0522dist.xlsx') as excel_file:
+                            df = pd.read_excel(excel_file)
+                            df = df.dropna(subset=['iyear', 'country_txt'])
+                            return df
+                except Exception as e:
+                    st.error(f"Erreur lors du chargement des données: {e}")
+                    st.info("Le fichier 'globalterrorismdb_0522dist.xlsx' ou 'globalterrorismdb_0522dist.zip' doit être dans le répertoire racine du projet.")
+                    return None
+
 
 def main():
     st.title("🇫🇷 Analyse Détaillée du Terrorisme en France")
@@ -64,9 +86,9 @@ def main():
     # Filtre par ville
     cities = sorted(france_data['city'].dropna().unique())
     selected_cities = st.sidebar.multiselect(
-        "Villes",
+        "Villes (laisser vide pour toutes)",
         options=cities,
-        default=cities[:5] if len(cities) > 5 else cities
+        default=[]
     )
     
     # Filtre par type d'attaque
@@ -83,6 +105,7 @@ def main():
         (france_data['iyear'] <= year_range[1])
     ]
     
+    # Filtre par ville (seulement si des villes sont sélectionnées)
     if selected_cities:
         filtered_france = filtered_france[filtered_france['city'].isin(selected_cities)]
     
@@ -178,25 +201,152 @@ def main():
                 fig_regions.update_layout(height=400, yaxis={'categoryorder': 'total ascending'})
                 st.plotly_chart(fig_regions, use_container_width=True)
     
-    # Carte des incidents si coordonnées disponibles
+    # CARTE INTERACTIVE DÉTAILLÉE DE LA FRANCE
+    st.header("🗺️ Carte interactive des attentats en France")
+    
     if 'latitude' in filtered_france.columns and 'longitude' in filtered_france.columns:
-        map_data = filtered_france[['latitude', 'longitude', 'city', 'iyear', 'attacktype1_txt', 'summary']].dropna(subset=['latitude', 'longitude'])
+        map_data = filtered_france[['latitude', 'longitude', 'city', 'iyear', 'attacktype1_txt', 'gname', 'nkill', 'nwound', 'summary']].dropna(subset=['latitude', 'longitude'])
         
         if len(map_data) > 0:
-            st.subheader("Localisation des incidents en France")
+            # Calculer le nombre d'incidents par ville pour la taille des marqueurs
+            city_incident_counts = map_data.groupby(['city', 'latitude', 'longitude']).size().reset_index(name='nombre_incidents')
+            city_details = map_data.groupby(['city', 'latitude', 'longitude']).agg({
+                'nkill': lambda x: int(x.fillna(0).sum()),
+                'nwound': lambda x: int(x.fillna(0).sum()),
+                'iyear': ['min', 'max']
+            }).reset_index()
             
-            fig_map = px.scatter_mapbox(
-                map_data,
-                lat='latitude',
-                lon='longitude',
-                hover_name='city',
-                hover_data=['iyear', 'attacktype1_txt'],
-                zoom=5,
-                height=500,
-                title="Carte des incidents terroristes en France"
+            city_details.columns = ['city', 'latitude', 'longitude', 'total_tues', 'total_blesses', 'premiere_attaque', 'derniere_attaque']
+            city_map_data = city_incident_counts.merge(city_details, on=['city', 'latitude', 'longitude'])
+            
+            st.markdown(f"""
+            **{len(city_map_data)} villes** touchées par des attentats en France.
+            La taille des marqueurs représente le nombre d'incidents dans chaque ville.
+            """)
+            
+            # Options de visualisation
+            col1, col2 = st.columns([3, 1])
+            
+            with col2:
+                map_style = st.radio(
+                    "Style de carte:",
+                    ["open-street-map", "carto-positron", "carto-darkmatter"],
+                    index=0
+                )
+                
+                show_all = st.checkbox("Afficher tous les incidents individuels", value=False)
+            
+            with col1:
+                if show_all:
+                    # Carte avec tous les incidents individuels
+                    fig_map = px.scatter_mapbox(
+                        map_data,
+                        lat='latitude',
+                        lon='longitude',
+                        hover_name='city',
+                        hover_data={
+                            'latitude': False,
+                            'longitude': False,
+                            'iyear': True,
+                            'attacktype1_txt': True,
+                            'gname': True,
+                            'nkill': True,
+                            'nwound': True
+                        },
+                        labels={
+                            'iyear': 'Année',
+                            'attacktype1_txt': 'Type d\'attaque',
+                            'gname': 'Groupe',
+                            'nkill': 'Tués',
+                            'nwound': 'Blessés'
+                        },
+                        color='attacktype1_txt',
+                        size='nkill',
+                        size_max=20,
+                        zoom=5.5,
+                        center={"lat": 46.5, "lon": 2.5},
+                        height=700,
+                        title="Tous les incidents terroristes en France (par incident)"
+                    )
+                else:
+                    # Carte agrégée par ville avec marqueurs proportionnels
+                    fig_map = px.scatter_mapbox(
+                        city_map_data,
+                        lat='latitude',
+                        lon='longitude',
+                        hover_name='city',
+                        hover_data={
+                            'latitude': False,
+                            'longitude': False,
+                            'nombre_incidents': True,
+                            'total_tues': True,
+                            'total_blesses': True,
+                            'premiere_attaque': True,
+                            'derniere_attaque': True
+                        },
+                        labels={
+                            'nombre_incidents': 'Nombre d\'incidents',
+                            'total_tues': 'Total tués',
+                            'total_blesses': 'Total blessés',
+                            'premiere_attaque': 'Première attaque',
+                            'derniere_attaque': 'Dernière attaque'
+                        },
+                        size='nombre_incidents',
+                        color='nombre_incidents',
+                        size_max=50,
+                        color_continuous_scale='Reds',
+                        zoom=5.5,
+                        center={"lat": 46.5, "lon": 2.5},
+                        height=700,
+                        title="Incidents terroristes en France agrégés par ville"
+                    )
+                
+                fig_map.update_layout(
+                    mapbox_style=map_style,
+                    margin={"r": 0, "t": 40, "l": 0, "b": 0}
+                )
+                
+                st.plotly_chart(fig_map, use_container_width=True)
+            
+            # Liste des villes avec statistiques
+            st.markdown("---")
+            st.subheader("📍 Liste détaillée des villes touchées")
+            
+            col1, col2, col3 = st.columns(3)
+            
+            with col1:
+                st.metric("Villes touchées", len(city_map_data))
+            
+            with col2:
+                ville_plus_touchee = city_map_data.nlargest(1, 'nombre_incidents')['city'].iloc[0]
+                nb_incidents_max = city_map_data['nombre_incidents'].max()
+                st.metric("Ville la plus touchée", ville_plus_touchee)
+                st.caption(f"{nb_incidents_max} incidents")
+            
+            with col3:
+                ville_plus_meurtriere = city_map_data.nlargest(1, 'total_tues')['city'].iloc[0]
+                nb_tues_max = city_map_data['total_tues'].max()
+                st.metric("Ville la plus meurtrière", ville_plus_meurtriere)
+                st.caption(f"{int(nb_tues_max)} victimes")
+            
+            # Tableau des villes
+            city_display = city_map_data.copy()
+            city_display = city_display.rename(columns={
+                'city': 'Ville',
+                'nombre_incidents': 'Incidents',
+                'total_tues': 'Tués',
+                'total_blesses': 'Blessés',
+                'premiere_attaque': 'Première attaque',
+                'derniere_attaque': 'Dernière attaque'
+            })
+            city_display = city_display[['Ville', 'Incidents', 'Tués', 'Blessés', 'Première attaque', 'Dernière attaque']]
+            city_display = city_display.sort_values('Incidents', ascending=False)
+            
+            st.dataframe(
+                city_display,
+                use_container_width=True,
+                height=400
             )
-            fig_map.update_layout(mapbox_style="open-street-map")
-            st.plotly_chart(fig_map, use_container_width=True)
     
     # Analyse temporelle détaillée
     st.header("📅 Analyse temporelle détaillée")

@@ -19,15 +19,24 @@ st.set_page_config(
 # Cache pour charger les données
 @st.cache_data
 def load_data():
-    """Charge les données depuis le fichier Excel"""
+    """Charge les données depuis le fichier Excel ou ZIP"""
     try:
+        # Essayer de charger le .xlsx directement
         df = pd.read_excel('globalterrorismdb_0522dist.xlsx')
-        # Nettoyage basique des données
         df = df.dropna(subset=['iyear', 'country_txt'])
         return df
-    except Exception as e:
-        st.error(f"Erreur lors du chargement des données: {e}")
-        return None
+    except:
+        try:
+            # Essayer de charger depuis le .zip (pour GitHub/déploiement)
+            import zipfile
+            with zipfile.ZipFile('globalterrorismdb_0522dist.zip', 'r') as zip_ref:
+                with zip_ref.open('globalterrorismdb_0522dist.xlsx') as excel_file:
+                    df = pd.read_excel(excel_file)
+                    df = df.dropna(subset=['iyear', 'country_txt'])
+                    return df
+        except Exception as e:
+            st.error(f"Erreur lors du chargement des données: {e}")
+            return None
 
 def main():
     st.title("🌍 Analyse du Terrorisme Mondial")
