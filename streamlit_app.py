@@ -11,7 +11,7 @@ warnings.filterwarnings('ignore')
 # Configuration de la page
 st.set_page_config(
     page_title="Analyse du Terrorisme Mondial",
-    page_icon="🌍",
+    page_icon=":material/public:",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -39,7 +39,7 @@ def load_data():
             return None
 
 def main():
-    st.title("🌍 Analyse du Terrorisme Mondial")
+    st.title(":material/public: Analyse du Terrorisme Mondial")
     st.markdown("### Exploration interactive de la Global Terrorism Database")
     
     # Chargement des données
@@ -48,7 +48,7 @@ def main():
         st.stop()
     
     # Sidebar pour les filtres
-    st.sidebar.header("🔍 Filtres")
+    st.sidebar.header(":material/filter_alt: Filtres")
     
     # Filtre par année
     min_year = int(df['iyear'].min())
@@ -103,17 +103,17 @@ def main():
     
     # Vérification si des données existent après filtrage
     if len(filtered_df) == 0:
-        st.warning("⚠️ Aucun incident trouvé avec les filtres sélectionnés.")
+        st.warning(":material/warning: Aucun incident trouvé avec les filtres sélectionnés.")
         
         if selected_country != "Tous les pays":
-            st.info(f"📊 Le pays **{selected_country}** n'a pas d'incidents terroristes enregistrés dans la période sélectionnée ({year_range[0]} - {year_range[1]}) ou avec les filtres appliqués.")
+            st.info(f":material/bar_chart: Le pays **{selected_country}** n'a pas d'incidents terroristes enregistrés dans la période sélectionnée ({year_range[0]} - {year_range[1]}) ou avec les filtres appliqués.")
             
             # Vérifier si le pays a des incidents dans toute la base
             country_total = df[df['country_txt'] == selected_country]
             if len(country_total) > 0:
-                st.info(f"💡 **{selected_country}** a {len(country_total)} incident(s) au total dans la base de données (toutes années confondues), mais aucun ne correspond aux filtres actuels.")
+                st.info(f":material/lightbulb: **{selected_country}** a {len(country_total)} incident(s) au total dans la base de données (toutes années confondues), mais aucun ne correspond aux filtres actuels.")
             else:
-                st.success(f"✅ **{selected_country}** n'a aucun incident terroriste enregistré dans cette base de données, ce qui est une bonne nouvelle !")
+                st.success(f":material/check_circle: **{selected_country}** n'a aucun incident terroriste enregistré dans cette base de données, ce qui est une bonne nouvelle !")
         
         st.markdown("**Suggestions :**")
         st.markdown("- Élargissez la période temporelle")
@@ -145,11 +145,11 @@ def main():
     
     # Onglets pour différentes visualisations
     tab1, tab2, tab3, tab4, tab5 = st.tabs([
-        "📊 Tendances temporelles", 
-        "🗺️ Répartition géographique", 
-        "⚔️ Types d'attaques", 
-        "🎯 Cibles", 
-        "📋 Données détaillées"
+        ":material/timeline: Tendances temporelles", 
+        ":material/map: Répartition géographique", 
+        ":material/gpp_bad: Types d'attaques", 
+        ":material/my_location: Cibles", 
+        ":material/table_chart: Données détaillées"
     ])
     
     with tab1:

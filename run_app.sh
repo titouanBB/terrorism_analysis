@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Script de lancement de l'application Streamlit
-echo "🚀 Lancement de l'application Streamlit..."
-echo "📊 Analyse du Terrorisme Mondial"
+echo "[START] Lancement de l'application Streamlit..."
+echo "[INFO] Analyse du Terrorisme Mondial"
 echo ""
 echo "L'application va s'ouvrir dans votre navigateur à l'adresse:"
 echo "http://localhost:8501"

@@ -63,10 +63,10 @@ install: setup
 # Check if data file exists
 check-data:
 	@if [ -f "$(DATA_FILE)" ]; then \
-		echo "✓ Data file exists: $(DATA_FILE)"; \
+		echo "[OK] Data file exists: $(DATA_FILE)"; \
 		ls -lh $(DATA_FILE); \
 	else \
-		echo "✗ Data file missing: $(DATA_FILE)"; \
+		echo "[KO] Data file missing: $(DATA_FILE)"; \
 		echo "Run 'make data' to extract it from $(DATA_ZIP)"; \
 	fi
 

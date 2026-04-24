@@ -11,7 +11,7 @@ warnings.filterwarnings('ignore')
 # Configuration de la page
 st.set_page_config(
     page_title="Analyse Terrorisme France",
-    page_icon="🇫🇷",
+    page_icon=":material/flag:",
     layout="wide"
 )
 
@@ -54,7 +54,7 @@ def load_data():
 
 
 def main():
-    st.title("🇫🇷 Analyse Détaillée du Terrorisme en France")
+    st.title(":material/flag: Analyse Détaillée du Terrorisme en France")
     st.markdown("### Données précises sur les incidents terroristes en France")
     
     # Chargement des données
@@ -70,7 +70,7 @@ def main():
         st.stop()
     
     # Sidebar pour les filtres
-    st.sidebar.header("🔍 Filtres France")
+    st.sidebar.header(":material/filter_alt: Filtres France")
     
     # Filtre par année
     min_year = int(france_data['iyear'].min())
@@ -135,7 +135,7 @@ def main():
         st.metric("Villes touchées", f"{cities_count}")
     
     # Informations générales sur la France
-    st.header("📊 Vue d'ensemble - France")
+    st.header(":material/bar_chart: Vue d'ensemble - France")
     
     col1, col2 = st.columns(2)
     
@@ -166,7 +166,7 @@ def main():
         st.plotly_chart(fig_attacks, use_container_width=True)
     
     # Analyse géographique détaillée
-    st.header("🗺️ Répartition géographique en France")
+    st.header(":material/map: Répartition géographique en France")
     
     col1, col2 = st.columns(2)
     
@@ -202,7 +202,7 @@ def main():
                 st.plotly_chart(fig_regions, use_container_width=True)
     
     # CARTE INTERACTIVE DÉTAILLÉE DE LA FRANCE
-    st.header("🗺️ Carte interactive des attentats en France")
+    st.header(":material/map: Carte interactive des attentats en France")
     
     if 'latitude' in filtered_france.columns and 'longitude' in filtered_france.columns:
         map_data = filtered_france[['latitude', 'longitude', 'city', 'iyear', 'attacktype1_txt', 'gname', 'nkill', 'nwound', 'summary']].dropna(subset=['latitude', 'longitude'])
@@ -310,7 +310,7 @@ def main():
             
             # Liste des villes avec statistiques
             st.markdown("---")
-            st.subheader("📍 Liste détaillée des villes touchées")
+            st.subheader(":material/location_on: Liste détaillée des villes touchées")
             
             col1, col2, col3 = st.columns(3)
             
@@ -349,7 +349,7 @@ def main():
             )
     
     # Analyse temporelle détaillée
-    st.header("📅 Analyse temporelle détaillée")
+    st.header(":material/calendar_month: Analyse temporelle détaillée")
     
     col1, col2 = st.columns(2)
     
@@ -387,11 +387,11 @@ def main():
                 st.plotly_chart(fig_groups, use_container_width=True)
     
     # SECTION DÉTAILLÉE: GROUPES TERRORISTES EN FRANCE
-    st.header("🎭 Analyse approfondie des groupes terroristes en France")
+    st.header(":material/groups: Analyse approfondie des groupes terroristes en France")
     
     if 'gname' in filtered_france.columns:
         # Statistiques globales des groupes
-        st.subheader("📊 Vue d'ensemble des groupes terroristes")
+        st.subheader(":material/bar_chart: Vue d'ensemble des groupes terroristes")
         
         col1, col2, col3, col4 = st.columns(4)
         
@@ -419,7 +419,7 @@ def main():
                 st.caption(f"{deadliest}")
         
         # Top 15 des groupes terroristes
-        st.subheader("🏆 Top 15 des groupes terroristes en France")
+        st.subheader(":material/emoji_events: Top 15 des groupes terroristes en France")
         
         col1, col2 = st.columns([2, 1])
         
@@ -466,7 +466,7 @@ def main():
         
         # FOCUS SPÉCIAL: ACTION DIRECTE
         st.markdown("---")
-        st.subheader("🎯 Focus spécial: Action Directe")
+        st.subheader(":material/my_location: Focus spécial: Action Directe")
         
         action_directe = filtered_france[
             filtered_france['gname'].str.contains('Action Directe', case=False, na=False) |
@@ -564,7 +564,7 @@ def main():
                 st.plotly_chart(fig_ad_attacks, use_container_width=True)
             
             # Liste détaillée des incidents d'Action Directe
-            st.markdown("#### 📋 Liste détaillée des incidents d'Action Directe")
+            st.markdown("#### :material/list_alt: Liste détaillée des incidents d'Action Directe")
             
             ad_display_columns = [
                 'iyear', 'imonth', 'iday', 'city', 'provstate',
@@ -599,7 +599,7 @@ def main():
         
         # Comparaison des principaux groupes
         st.markdown("---")
-        st.subheader("⚔️ Comparaison des principaux groupes terroristes")
+        st.subheader(":material/compare_arrows: Comparaison des principaux groupes terroristes")
         
         # Top 5 groupes (excluant Unknown)
         top_groups = filtered_france[filtered_france['gname'] != 'Unknown']['gname'].value_counts().head(5).index.tolist()
@@ -630,7 +630,7 @@ def main():
                 st.plotly_chart(fig_comparison, use_container_width=True)
             
             # Tableau comparatif
-            st.markdown("#### 📊 Tableau comparatif détaillé")
+            st.markdown("#### :material/table_chart: Tableau comparatif détaillé")
             
             comparison_stats = []
             
@@ -659,7 +659,7 @@ def main():
             )
     
     # Analyse des cibles et armes
-    st.header("🎯 Analyse des cibles et moyens")
+    st.header(":material/my_location: Analyse des cibles et moyens")
     
     col1, col2 = st.columns(2)
     
@@ -690,7 +690,7 @@ def main():
             st.plotly_chart(fig_weapons, use_container_width=True)
     
     # Données détaillées
-    st.header("📋 Incidents détaillés en France")
+    st.header(":material/table_chart: Incidents détaillés en France")
     
     # Colonnes importantes pour l'affichage
     display_columns = [
@@ -727,7 +727,7 @@ def main():
     )
     
     # Statistiques finales
-    st.header("📈 Statistiques France")
+    st.header(":material/trending_up: Statistiques France")
     
     col1, col2, col3 = st.columns(3)
     
@@ -753,7 +753,7 @@ def main():
         st.write(f"**Ville la plus touchée:** {most_targeted_city}")
     
     # Option de téléchargement
-    st.header("💾 Télécharger les données")
+    st.header(":material/download: Télécharger les données")
     if st.button("Télécharger les données France (CSV)"):
         csv = filtered_france.to_csv(index=False)
         st.download_button(
