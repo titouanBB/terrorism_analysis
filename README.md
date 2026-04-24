@@ -1,74 +1,31 @@
-# :material/public: Analyse du Terrorisme Mondial - Application Streamlit
+# Analyse du Terrorisme Mondial
 
-Cette application Streamlit permet d'explorer et d'analyser la Global Terrorism Database de manière interactive.
+Une application interactive pour explorer et analyser les données mondiales sur le terrorisme.
 
-## :material/bar_chart: Fonctionnalités
+## Qu'est-ce que cette application ?
 
-L'application offre plusieurs onglets d'analyse :
+C'est une application web (Streamlit) qui vous permet de :
+- **Voir les tendances** : Comment le nombre d'attaques terroristes a changé au fil des années
+- **Localiser les attaques** : Quels pays et régions sont les plus affectés
+- **Analyser les attaques** : Quels types d'attaques sont les plus courants et quelles armes sont utilisées
+- **Comprendre les cibles** : Qui ou quoi est ciblé par ces attaques
+- **Filtrer les données** : Analyser les données par période, région ou type d'attaque
 
-### 1. :material/timeline: Tendances temporelles
-- Évolution du nombre d'incidents par année
-- Heatmap des incidents par mois et année
-- Analyse des tendances temporelles
+## Installation
 
-### 2. :material/map: Répartition géographique
-- Top des pays les plus touchés
-- Distribution par région
-- Carte mondiale des incidents (si coordonnées disponibles)
+### Méthode la plus simple (recommandée)
 
-### 3. :material/gpp_bad: Types d'attaques
-- Types d'attaques les plus fréquents
-- Types d'armes utilisées
-- Analyse des méthodes d'attaque
-
-### 4. :material/my_location: Cibles
-- Types de cibles les plus visées
-- Taux de succès des attaques
-- Analyse des objectifs
-
-### 5. :material/table_chart: Données détaillées
-- Visualisation tabulaire des données
-- Export des données filtrées en CSV
-- Exploration détaillée
-
-## :material/filter_alt: Filtres interactifs
-
-- **Période** : Sélectionner une plage d'années
-- **Régions** : Filtrer par régions géographiques
-- **Types d'attaques** : Filtrer par types d'attaques spécifiques
-
-## :material/rocket_launch: Installation et lancement
-
-### :material/build: Méthode recommandée : Makefile
 ```bash
-# Configuration complète automatique
 make all
-
-# Lancer l'application Streamlit
-make run
-
-# Explorer les données
-make explore
-
-# Voir toutes les commandes disponibles
-make help
 ```
 
-### Méthode 1 : Script automatique
-```bash
-./run_app.sh
-```
+Cela va automatiquement :
+1. Créer un environnement virtuel Python
+2. Installer toutes les dépendances nécessaires
+3. Préparer les données
 
-### Méthode 2 : Manuel
-```bash
-# Activer l'environnement virtuel
-source .venv/bin/activate
+### Ou manuellement
 
-# Lancer l'application
-streamlit run streamlit_app.py
-```
-
-### Méthode 3 : Première installation
 ```bash
 # Installer les dépendances
 pip install -r requirements.txt
@@ -77,27 +34,52 @@ pip install -r requirements.txt
 streamlit run streamlit_app.py
 ```
 
-## :material/list_alt: Commandes Makefile
+## Utilisation
 
-- `make all` - Configuration complète (environnement + données)
-- `make setup` - Créer l'environnement virtuel et installer les dépendances
-- `make data` - Extraire le fichier de données du zip
-- `make run` - Lancer l'application Streamlit
-- `make explore` - Exécuter le script d'exploration des données
-- `make clean` - Nettoyer (supprimer venv et données extraites)
-- `make help` - Afficher toutes les commandes disponibles
+Après installation, lancez l'application avec :
 
-## :material/folder: Structure du projet
-
+```bash
+make run
 ```
-vic/
-├── globalterrorismdb_0522dist.xlsx  # Base de données source
-├── streamlit_app.py                 # Application Streamlit principale
-├── explore_data.py                  # Script d'exploration des données
-├── requirements.txt                 # Dépendances Python
-├── run_app.sh                      # Script de lancement
-└── README.md                       # Ce fichier
+
+Ou directement :
+
+```bash
+streamlit run streamlit_app.py
 ```
+
+L'application s'ouvrira dans votre navigateur à l'adresse `http://localhost:8501`
+
+## Les différents onglets
+
+1. **Tendances temporelles** - Graphiques montrant comment les attaques ont évolué avec le temps
+
+2. **Répartition géographique** - Carte et statistiques des pays et régions les plus touchés
+
+3. **Types d'attaques** - Types d'attaques et d'armes les plus utilisées
+
+4. **Cibles** - Analyse de qui ou quoi est visé (gouvernement, civils, militaires, etc.)
+
+5. **Données détaillées** - Tableau avec toutes les informations pour explorer en détail
+
+## Commandes disponibles
+
+```bash
+make all        # Installation complète
+make setup      # Configuration de l'environnement
+make run        # Lancer l'application
+make explore    # Analyser les données en console
+make clean      # Supprimer l'installation
+make help       # Voir toutes les commandes
+```
+
+## Fichiers du projet
+
+- `streamlit_app.py` - L'application principale
+- `analyze_data.py` - Analyse des données
+- `requirements.txt` - Les dépendances Python
+- `run_app.sh` - Script de lancement simple
+- `Makefile` - Commandes pratiques
 
 ## :material/trending_up: Données
 
